@@ -1,0 +1,63 @@
+package com.bowlofbits.spring5webfluxrest.controllers;
+
+import com.bowlofbits.spring5webfluxrest.domain.Category;
+import com.bowlofbits.spring5webfluxrest.repositories.CategoryRepository;
+import org.reactivestreams.Publisher;
+import org.springframework.http.HttpStatus;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+/**
+ * Created by heindrichpaul on 22/09/2020
+ */
+
+@RestController
+public class CategoryController {
+    private final CategoryRepository categoryRepository;
+
+    public CategoryController(CategoryRepository categoryRepository) {
+        this.categoryRepository = categoryRepository;
+    }
+
+    @ResponseBody
+    @GetMapping("/api/v1/categories")
+    public Flux<Category> getCategories() {
+        return categoryRepository.findAll();
+    }
+
+    @ResponseBody
+    @GetMapping("/api/v1/categories/{id}")
+    public Mono<Category> getCategoryById(@PathVariable String id) {
+        return categoryRepository.findById(id);
+    }
+
+    @ResponseBody
+    @PostMapping("/api/v1/categories")
+    @ResponseStatus(HttpStatus.CREATED)
+    public Mono<Void> createCategory(@RequestBody Publisher<Category> categoryPublisher) {
+        return categoryRepository.saveAll(categoryPublisher).then();
+    }
+
+
+    @ResponseBody
+    @PutMapping("/api/v1/categories/{id}")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public Mono<Category> updateCategory(@PathVariable String id, @RequestBody Category category) {
+        category.setId(id);
+        return categoryRepository.save(category);
+    }
+
+    @ResponseBody
+    @PatchMapping("/api/v1/categories/{id}")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public Mono<Category> patchCategory(@PathVariable String id, @RequestBody Category category) {
+        Category foundCategory = categoryRepository.findById(id).block();
+        if (!StringUtils.isEmpty(category.getDescription()) && !foundCategory.getDescription().equals(category.getDescription())) {
+            foundCategory.setDescription(category.getDescription());
+            return categoryRepository.save(foundCategory);
+        }
+        return Mono.just(foundCategory);
+    }
+}
