@@ -2,4 +2,4 @@
 
 # Spring Framework 5 Webflux Rest Application
 
-This repository is for an example application built in Spring Framework 5 using Webflux and Spring Boot
+This repository is for an example application built in Spring Framework 5 using Webflux and Spring Boot.
