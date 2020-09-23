@@ -17,8 +17,7 @@ import reactor.core.publisher.Mono;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class VendorControllerTest {
@@ -122,7 +121,7 @@ class VendorControllerTest {
                 .expectStatus()
                 .isAccepted();
 
-        verify(vendorRepository).save(any());
+        verify(vendorRepository,times(2)).save(any());
     }
 
     @Test
